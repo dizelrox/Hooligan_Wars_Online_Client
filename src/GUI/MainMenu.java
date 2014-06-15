@@ -3,7 +3,13 @@ import Logic.GameInitialize;
 import Sound.BackGroundMusicThread;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.Toolkit;
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 /**
  * This class describes the main menu.
@@ -56,10 +62,9 @@ public class MainMenu extends javax.swing.JFrame
     private void initComponents()
     {
 
-        newPlayer = new javax.swing.JButton();
         mainExitButton = new javax.swing.JButton();
         login = new javax.swing.JButton();
-        onlinePlayButton = new javax.swing.JButton();
+        newPlayer = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle(GameInitialize.gameVersion);
@@ -73,17 +78,6 @@ public class MainMenu extends javax.swing.JFrame
             public void windowActivated(java.awt.event.WindowEvent evt)
             {
                 formWindowActivated(evt);
-            }
-        });
-
-        newPlayer.setBackground(java.awt.Color.lightGray);
-        newPlayer.setFont(new java.awt.Font("Trajan Pro", 1, 24)); // NOI18N
-        newPlayer.setText("New player");
-        newPlayer.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                newPlayerActionPerformed(evt);
             }
         });
 
@@ -109,21 +103,14 @@ public class MainMenu extends javax.swing.JFrame
             }
         });
 
-        onlinePlayButton.setBackground(java.awt.Color.lightGray);
-        onlinePlayButton.setFont(new java.awt.Font("Trajan Pro", 1, 24)); // NOI18N
-        onlinePlayButton.setText("Online Play");
-        onlinePlayButton.addMouseListener(new java.awt.event.MouseAdapter()
-        {
-            public void mouseClicked(java.awt.event.MouseEvent evt)
-            {
-                onlinePlayButtonMouseClicked(evt);
-            }
-        });
-        onlinePlayButton.addActionListener(new java.awt.event.ActionListener()
+        newPlayer.setBackground(java.awt.Color.lightGray);
+        newPlayer.setFont(new java.awt.Font("Trajan Pro", 1, 24)); // NOI18N
+        newPlayer.setText("New player");
+        newPlayer.addActionListener(new java.awt.event.ActionListener()
         {
             public void actionPerformed(java.awt.event.ActionEvent evt)
             {
-                onlinePlayButtonActionPerformed(evt);
+                newPlayerActionPerformed(evt);
             }
         });
 
@@ -132,29 +119,23 @@ public class MainMenu extends javax.swing.JFrame
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(57, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(mainExitButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(login, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(onlinePlayButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(69, 69, 69))
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(newPlayer, javax.swing.GroupLayout.DEFAULT_SIZE, 305, Short.MAX_VALUE)
-                .addContainerGap())
+                .addGap(62, 62, 62)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(login, javax.swing.GroupLayout.DEFAULT_SIZE, 163, Short.MAX_VALUE)
+                    .addComponent(mainExitButton, javax.swing.GroupLayout.DEFAULT_SIZE, 163, Short.MAX_VALUE)
+                    .addComponent(newPlayer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(62, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
+            .addGroup(layout.createSequentialGroup()
+                .addGap(28, 28, 28)
+                .addComponent(login, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
                 .addComponent(newPlayer, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(login, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(mainExitButton, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(onlinePlayButton, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(20, Short.MAX_VALUE))
+                .addComponent(mainExitButton)
+                .addGap(28, 28, 28))
         );
 
         pack();
@@ -198,16 +179,6 @@ public class MainMenu extends javax.swing.JFrame
     {//GEN-HEADEREND:event_loginActionPerformed
         LoginDialog d = new LoginDialog(this,true);
     }//GEN-LAST:event_loginActionPerformed
-
-    private void onlinePlayButtonMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_onlinePlayButtonMouseClicked
-    {//GEN-HEADEREND:event_onlinePlayButtonMouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_onlinePlayButtonMouseClicked
-
-    private void onlinePlayButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_onlinePlayButtonActionPerformed
-    {//GEN-HEADEREND:event_onlinePlayButtonActionPerformed
-        
-    }//GEN-LAST:event_onlinePlayButtonActionPerformed
 /**
  * This method is called on window creation.Its purpose to put this window at the middle of the screen.
  */
@@ -229,6 +200,5 @@ public class MainMenu extends javax.swing.JFrame
     private javax.swing.JButton login;
     private javax.swing.JButton mainExitButton;
     private javax.swing.JButton newPlayer;
-    private javax.swing.JButton onlinePlayButton;
     // End of variables declaration//GEN-END:variables
 }

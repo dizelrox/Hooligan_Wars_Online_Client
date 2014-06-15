@@ -19,6 +19,8 @@ import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.io.IOException;
+import java.net.ConnectException;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,6 +28,7 @@ import javax.sound.sampled.FloatControl;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 /**
  * <h2>This class represents the character creation frame.</h2>
@@ -270,7 +273,6 @@ public class CharacterFrame extends javax.swing.JFrame
         );
 
         panelShop.setBackground(new java.awt.Color(182, 180, 171));
-        panelShop.setBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED));
         panelShop.setPreferredSize(new java.awt.Dimension(570, 114));
         panelShop.setVerifyInputWhenFocusTarget(false);
 
@@ -489,7 +491,7 @@ public class CharacterFrame extends javax.swing.JFrame
                         .addComponent(armorLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(armorLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 90, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 94, Short.MAX_VALUE)
                 .addGroup(panelShopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(panelShopLayout.createSequentialGroup()
                         .addComponent(weaponLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -548,7 +550,7 @@ public class CharacterFrame extends javax.swing.JFrame
                             .addComponent(weaponLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(weaponLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(weaponLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(15, Short.MAX_VALUE))
         );
 
         startBattleButton.setBackground(java.awt.Color.lightGray);
@@ -753,8 +755,9 @@ public class CharacterFrame extends javax.swing.JFrame
         {
             InteractionWithGameServer instance;
 
+            try
+            {
             instance = new InteractionWithGameServer();
-
             Integer status = (Integer) instance.getObjectFromServer();
 
             if (status.intValue() == 1)
@@ -771,6 +774,14 @@ public class CharacterFrame extends javax.swing.JFrame
                 battleForm.setVisible(true);
                 this.setVisible(false);
             }
+            }
+            
+            catch(IOException ex)
+            {
+            JOptionPane.showMessageDialog(null, "Server is not responing please try again later", "Connection Error", JOptionPane.ERROR_MESSAGE);
+            }
+            
+            
 
         } else
         {

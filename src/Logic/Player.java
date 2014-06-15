@@ -84,8 +84,9 @@ public class Player implements Serializable
      */
     public Player(String name) //Player constructor
     {
-        shopIcon = new ImageIcon(getClass().getResource("images/player-image-fixed.jpg"));
-        battleIcon = new ImageIcon(getClass().getResource("images/player-battle-window.jpg"));
+        int randomIcon = (int)(Math.random() * 8 + 1);
+        shopIcon = new ImageIcon(getClass().getResource("images/warrior_shop_"+randomIcon+".jpg"));
+        battleIcon = new ImageIcon(getClass().getResource("images/warrior_battle_"+randomIcon+".jpg"));
         int rndStrength = (int)(Math.random() * 3 + 1); //Generate strength factor
         setStrengthFactor(rndStrength);
         double rndDefence = (double)(Math.random() * 0.3); //Generate defence factor
@@ -400,8 +401,8 @@ public class Player implements Serializable
             else
                 health -= (int)rawDamage/2;
             
-            consoleText = String.format("[" + getCurrentTimeStamp() + "] %s has been hit with %s in the %s and successfully blocked the attack. Got %d points of damage!\n",
-                this.getName(), ((weapon != null)? weapon.getName(): "bare hands") , attackArea.toString() ,(int) (rawDamage/2) );
+            consoleText = String.format(" been hit with %s in the %s and successfully blocked the attack. Got %d points of damage!\n",
+               ((weapon != null)? weapon.getName(): "bare hands") , attackArea.toString() ,(int) (rawDamage/2) );
             
             
         }else
@@ -411,8 +412,8 @@ public class Player implements Serializable
             else
                 health -= (int)rawDamage;
             
-            consoleText = String.format("[" + getCurrentTimeStamp() + "] %s has been hit with %s in the %s and couldn't properly block it. Got %d points of damage!\n",
-                this.getName(), ((weapon != null)? weapon.getName(): "bare hands") , attackArea.toString() ,(int) rawDamage );
+            consoleText = String.format(" been hit with %s in the %s and couldn't properly block it. Got %d points of damage!\n",
+               ((weapon != null)? weapon.getName(): "bare hands") , attackArea.toString() ,(int) rawDamage );
         }
     }
     /**

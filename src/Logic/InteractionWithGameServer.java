@@ -10,10 +10,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -32,10 +34,8 @@ public class InteractionWithGameServer
     Scanner inputSatusFromServer;
     
     Socket clientSocket;    
-    public InteractionWithGameServer()
+    public InteractionWithGameServer() throws IOException
     {
-        try
-        {
             clientSocket = new Socket ("127.0.0.1", 55555);
             System.out.println(clientSocket);
             //inputSatusFromServer = new Scanner(inputFromServer);
@@ -43,10 +43,7 @@ public class InteractionWithGameServer
             
             receiveObjectFromServer = new ObjectInputStream(clientSocket.getInputStream());
             
-        } catch (IOException ex)
-        {
-            Logger.getLogger(InteractionWithGameServer.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        
     }
     
     public boolean opponentConnected()

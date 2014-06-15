@@ -45,12 +45,12 @@ public class BattleForm extends javax.swing.JFrame
      * the user character which created in previous {@linkplain CharacterFrame}
      * window.
      */
-    Player player;
+    volatile Player player;
     /**
      * Holds reference to the bot instance of class {@linkplain Player} but with
      * different constructor.
      */
-    Player bot;
+    volatile Player bot;
 
     /**
      * Holds reference to the previous window.
@@ -62,6 +62,8 @@ public class BattleForm extends javax.swing.JFrame
     Thread speakThread;
 
     InteractionWithGameServer instance;
+
+    volatile Boolean turn;
 
     /**
      * The main constructor of the class that initializes all class properties
@@ -84,8 +86,69 @@ public class BattleForm extends javax.swing.JFrame
 
         initComponents();
 
+        turn = (Boolean) instance.getObjectFromServer();
+
+        if (!turn)
+        {
+            waitForHit();
+        }
+
         speakThread = new Thread(new TalkThread("Choose your attack and defence areas."));
         speakThread.start();
+    }
+
+    private void waitForHit()
+    {
+        Thread wait = new Thread(new Runnable()
+        {
+
+            @Override
+            public void run()
+            {
+                while (player.getDefenceArea() == null)
+                {
+
+                }
+                instance.sendObjectToServer(player.getDefenceArea());
+                bot.setAttackArea((Logic.Type) instance.getObjectFromServer());
+                bot.throwHit((Weapon) bot.getItem(Logic.Type.WEAPON), bot.getStrengthFactor(), bot.getAttackArea(), player);
+                turn = !turn;
+                battleConsole.setText(battleConsole.getText() + "[" + player.getCurrentTimeStamp() + "]" + "You have" + player.getConsoleText());
+                battleConsole.repaint();
+                playerHealthPBar.setValue(player.getHealth());
+                playerHealthPBar.repaint();
+                String number = Integer.toString((int) (Math.random() * 7 + 1));
+                SoundPlayer.Play("hit" + number);
+                if (player.getHealth() <= 0)
+                {
+                    try
+                    {
+                        new InteractionWithDB().updatePlayerStats(player, false);
+                    } catch (CommunicationsException ex)
+                    {
+                        Logger.getLogger(BattleForm.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (SQLException ex)
+                    {
+                        WinOrLoseDialog endDialog = new WinOrLoseDialog(BattleForm.this, true, "You've lost the battle!", "Error updating score", charFrame);
+                        endDialog.setVisible(true);
+                        Logger.getLogger(BattleForm.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    WinOrLoseDialog endDialog = new WinOrLoseDialog(BattleForm.this, true, "You've lost the battle!", "", charFrame);
+                    endDialog.setVisible(true);
+                }
+                nullPlayerAndGuiFields();
+                defineAttackButtonAvailability();
+            }
+        });
+        wait.start();
+    }
+
+    private void nullPlayerAndGuiFields()
+    {
+        player.setAttackArea(null);
+        player.setDefenceArea(null);
+        defenceRadios.clearSelection();
+        attackRadios.clearSelection();
     }
 
     @Override
@@ -93,7 +156,7 @@ public class BattleForm extends javax.swing.JFrame
     {
         JOptionPane.showMessageDialog(this, "Cant exit during battle!", "Error", JOptionPane.ERROR_MESSAGE);
     }
-    
+
     public void realDispose()
     {
         super.dispose();
@@ -462,48 +525,62 @@ public class BattleForm extends javax.swing.JFrame
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(151, 151, 151)
+                        .addComponent(playerHealthPBar, javax.swing.GroupLayout.PREFERRED_SIZE, 253, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(playerHealthPBar, javax.swing.GroupLayout.PREFERRED_SIZE, 253, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(playerIcon, javax.swing.GroupLayout.PREFERRED_SIZE, 253, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(attackButton, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                        .addComponent(defendHead)
-                                        .addComponent(defendChest)
-                                        .addComponent(defendStomach)
-                                        .addComponent(defendLegs)
-                                        .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(attackHead)
-                                        .addComponent(attackChest)
-                                        .addComponent(attackStomach)
-                                        .addComponent(attackLegs)
-                                        .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addComponent(jLabel11)
+                                    .addComponent(jLabel12))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(botIcon, javax.swing.GroupLayout.PREFERRED_SIZE, 253, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(botHealthPBar, javax.swing.GroupLayout.PREFERRED_SIZE, 253, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(botHealthPBar, javax.swing.GroupLayout.PREFERRED_SIZE, 253, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(jScrollPane2))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(playerNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 253, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(backgroundSoundLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(18, 18, 18)
+                                .addComponent(playerNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 253, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                        .addComponent(backgroundSoundLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(backgroundSlider, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                        .addComponent(effectsSoundLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(soundEffectsSlider, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(backgroundSlider, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(effectsSoundLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(soundEffectsSlider, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(botNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 253, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(botNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 253, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(18, 18, 18)
+                                .addComponent(playerIcon, javax.swing.GroupLayout.PREFERRED_SIZE, 253, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(45, 45, 45)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addComponent(defendHead)
+                                            .addComponent(defendChest)
+                                            .addComponent(defendStomach)
+                                            .addComponent(defendLegs)))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(45, 45, 45)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addComponent(attackHead)
+                                            .addComponent(attackChest)
+                                            .addComponent(attackStomach)
+                                            .addComponent(attackLegs)))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(30, 30, 30)
+                                        .addComponent(attackButton)))
+                                .addGap(0, 0, Short.MAX_VALUE)))))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -535,7 +612,7 @@ public class BattleForm extends javax.swing.JFrame
                             .addComponent(playerHealthPBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(botHealthPBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -558,10 +635,9 @@ public class BattleForm extends javax.swing.JFrame
                                 .addComponent(attackLegs)
                                 .addGap(32, 32, 32)
                                 .addComponent(attackButton, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(5, 5, 5)
-                                .addComponent(botIcon, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addComponent(playerIcon, javax.swing.GroupLayout.PREFERRED_SIZE, 353, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(playerIcon, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 353, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(botIcon, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 353, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                         .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -591,94 +667,56 @@ public class BattleForm extends javax.swing.JFrame
         defineAttackButtonAvailability();
     }//GEN-LAST:event_attackLegsActionPerformed
 
-    
+
     private void attackButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_attackButtonActionPerformed
     {//GEN-HEADEREND:event_attackButtonActionPerformed
-
-        
-        if (player.getHealth() > 0 && bot.getHealth() > 0)
+        Thread attackThread = new Thread(new Runnable()
         {
-            Thread t = new Thread(new Runnable()
+
+            @Override
+            public void run()
             {
-
-                @Override
-                public void run()
+                attackButton.setEnabled(false);
+                turn = !turn;
+                instance.sendObjectToServer(player.getAttackArea());
+                bot.setDefenceArea((Logic.Type) instance.getObjectFromServer());
+                player.throwHit((Weapon) player.getItem(Logic.Type.WEAPON), player.getStrengthFactor(), player.getAttackArea(), bot);
+                battleConsole.setText(battleConsole.getText() + "[" + player.getCurrentTimeStamp() + "]" + bot.getName() + " has" + bot.getConsoleText());
+                battleConsole.repaint();
+                String number = Integer.toString((int) (Math.random() * 7 + 1));
+                SoundPlayer.Play("hit" + number);
+                botHealthPBar.setValue(bot.getHealth());
+                botHealthPBar.repaint();
+                if (bot.getHealth() <= 0)
                 {
-                    attackButton.setEnabled(false);
-                    instance.sendObjectToServer(player.getAttackArea());
-                    instance.sendObjectToServer(player.getDefenceArea());
-
-                    bot.setAttackArea((Logic.Type) instance.getObjectFromServer());
-                    bot.setDefenceArea((Logic.Type) instance.getObjectFromServer());
-
-                    player.throwHit((Weapon) player.getItem(Logic.Type.WEAPON), player.getStrengthFactor(), player.getAttackArea(), bot);
-                    battleConsole.setText(battleConsole.getText() + bot.getConsoleText());
-                    battleConsole.repaint();
-                    String number = Integer.toString((int) (Math.random() * 7 + 1));
-                    SoundPlayer.Play("hit" + number);
-
-                    BattleForm.this.botHealthPBar.setValue(bot.getHealth());
-                    BattleForm.this.botHealthPBar.repaint();
-
-                    bot.throwHit((Weapon) bot.getItem(Logic.Type.WEAPON), bot.getStrengthFactor(), bot.getAttackArea(), player);
-                    battleConsole.setText(battleConsole.getText() + player.getConsoleText());
-                    battleConsole.repaint();
-                    playerHealthPBar.setValue(player.getHealth());
-                    playerHealthPBar.repaint();
-                    attackButton.setEnabled(true);
-
-                    if (bot.getHealth() > 0)
+                    try
                     {
-
-                        if (player.getHealth() <= 0)
-                        {
-                            try
-                            {
-                                new InteractionWithDB().updatePlayerStats(player, false);
-                            } catch (CommunicationsException ex)
-                            {
-                                Logger.getLogger(BattleForm.class.getName()).log(Level.SEVERE, null, ex);
-                            } catch (SQLException ex)
-                            {
-                                WinOrLoseDialog endDialog = new WinOrLoseDialog(BattleForm.this, true, "You've lost the battle!", "Error updating score", charFrame);
-                                endDialog.setVisible(true);
-                                Logger.getLogger(BattleForm.class.getName()).log(Level.SEVERE, null, ex);
-                            }
-                            WinOrLoseDialog endDialog = new WinOrLoseDialog(BattleForm.this, true, "You've lost the battle!", "", charFrame);
-                            endDialog.setVisible(true);
-                        } else
-                        {
-
-                        }
-                    } else
+                        new InteractionWithDB().updatePlayerStats(player, true);
+                    } catch (CommunicationsException ex)
                     {
-                        try
-                        {
-                            new InteractionWithDB().updatePlayerStats(player, true);
-                        } catch (CommunicationsException ex)
-                        {
-                            Logger.getLogger(BattleForm.class.getName()).log(Level.SEVERE, null, ex);
-                        } catch (SQLException ex)
-                        {
-                            WinOrLoseDialog endDialog = new WinOrLoseDialog(BattleForm.this, true, "Congratulations!\nYou're victorious!", charFrame.game.getUnlockedItems() + "\nError updating score", charFrame);
-                            endDialog.setVisible(true);
-                            Logger.getLogger(BattleForm.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-
-                        WinOrLoseDialog endDialog = new WinOrLoseDialog(BattleForm.this, true, "Congratulations!\nYou're victorious!", charFrame.game.getUnlockedItems(), charFrame);
+                        Logger.getLogger(BattleForm.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (SQLException ex)
+                    {
+                        WinOrLoseDialog endDialog = new WinOrLoseDialog(BattleForm.this, true, "Congratulations!\nYou're victorious!", charFrame.game.getUnlockedItems() + "\nError updating score", charFrame);
                         endDialog.setVisible(true);
+                        Logger.getLogger(BattleForm.class.getName()).log(Level.SEVERE, null, ex);
                     }
+
+                    WinOrLoseDialog endDialog = new WinOrLoseDialog(BattleForm.this, true, "Congratulations!\nYou're victorious!", charFrame.game.getUnlockedItems(), charFrame);
+                    endDialog.setVisible(true);
                 }
-            });
-            t.start();
-        }
-        System.out.println(player.getHealth());
-        System.out.println(bot.getHealth());
+                nullPlayerAndGuiFields();
+                defineAttackButtonAvailability();
+                waitForHit();
+            }
+        });
+        attackThread.start();
+
     }//GEN-LAST:event_attackButtonActionPerformed
 
     private void defineAttackButtonAvailability()
     {
-        if (player.getAttackArea() != null && player.getDefenceArea() != null)
+        if (player.getAttackArea() != null && player.getDefenceArea() != null && turn)
         {
             attackButton.setEnabled(true);
         } else

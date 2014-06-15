@@ -58,9 +58,9 @@ public abstract class Item implements Serializable
      */
     public Item(String name,boolean available,String itemFileName) //disabled PRICE
     {
-        String smallColorIcon = "images/"+itemFileName+"-Col-Small.jpg";
-        String smallBWIcon= "images/"+itemFileName+"-BW-Small.jpg";
-        String bigIcon= "images/"+itemFileName+"-Col-Big.jpg";
+        String smallColorIcon = "images/"+itemFileName+"_Small_Col.jpg";
+        String smallBWIcon= "images/"+itemFileName+"_Small_BW.jpg";
+        String bigIcon= "images/"+itemFileName+"_Big.jpg";
         //setPrice(price);  //disabled PRICE
         setName(name);
         setSmallColorIcon(new ImageIcon(getClass().getResource(smallColorIcon)));

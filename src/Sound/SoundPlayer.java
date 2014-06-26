@@ -5,10 +5,14 @@
  */
 package Sound;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javazoom.jl.decoder.JavaLayerException;
@@ -21,6 +25,7 @@ import javazoom.jl.player.Player;
  */
 public class SoundPlayer extends JavaSoundAudioDevice
 {
+
     private static class Play implements Runnable
     {
 
@@ -33,21 +38,14 @@ public class SoundPlayer extends JavaSoundAudioDevice
 
         public void run()
         {
-            File file = new File(getClass().getResource("tracks/" + track + ".mp3").getFile());
-            FileInputStream stream = null;
             try
             {
-                stream = new FileInputStream(file);
-            } catch (FileNotFoundException ex)
-            {
-                Logger.getLogger(SoundPlayer.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            try
-            {
-                Player p = new Player(stream);
+                
+            InputStream dir_url = ClassLoader.getSystemResourceAsStream("Sound/tracks/" + track + ".mp3");
+                
+                Player p = new Player(dir_url);
                 p.play();
                 p.close();
-
             } catch (JavaLayerException ex)
             {
                 Logger.getLogger(SoundPlayer.class.getName()).log(Level.SEVERE, null, ex);

@@ -10,7 +10,6 @@ import Logic.InteractionWithDB;
 import Logic.InteractionWithGameServer;
 import Logic.Player;
 import Logic.Weapon;
-import Logic.WaitAndRefresh;
 import Sound.SoundPlayer;
 import Sound.SoundVolume;
 import Sound.TalkThread;
@@ -667,6 +666,17 @@ public class BattleForm extends javax.swing.JFrame
         defineAttackButtonAvailability();
     }//GEN-LAST:event_attackLegsActionPerformed
 
+    public void switchRadios()
+    {
+        attackHead.setEnabled(!attackHead.isEnabled());
+        attackChest.setEnabled(!attackChest.isEnabled());
+        attackStomach.setEnabled(!attackStomach.isEnabled());
+        attackLegs.setEnabled(!attackLegs.isEnabled());
+        defendHead.setEnabled(!defendHead.isEnabled());
+        defendChest.setEnabled(!defendChest.isEnabled());
+        defendStomach.setEnabled(!defendStomach.isEnabled());
+        defendLegs.setEnabled(!defendLegs.isEnabled());
+    }
 
     private void attackButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_attackButtonActionPerformed
     {//GEN-HEADEREND:event_attackButtonActionPerformed
@@ -677,6 +687,7 @@ public class BattleForm extends javax.swing.JFrame
             public void run()
             {
                 attackButton.setEnabled(false);
+                switchRadios();
                 turn = !turn;
                 instance.sendObjectToServer(player.getAttackArea());
                 bot.setDefenceArea((Logic.Type) instance.getObjectFromServer());
@@ -687,6 +698,7 @@ public class BattleForm extends javax.swing.JFrame
                 SoundPlayer.Play("hit" + number);
                 botHealthPBar.setValue(bot.getHealth());
                 botHealthPBar.repaint();
+                switchRadios();
                 if (bot.getHealth() <= 0)
                 {
                     try

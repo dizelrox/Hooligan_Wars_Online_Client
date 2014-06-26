@@ -3,13 +3,7 @@ import Logic.GameInitialize;
 import Sound.BackGroundMusicThread;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Image;
 import java.awt.Toolkit;
-import java.io.File;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 /**
  * This class describes the main menu.
@@ -39,7 +33,7 @@ public class MainMenu extends javax.swing.JFrame
         
         if (playMusic)
         {   
-        b = new BackGroundMusicThread("src/Sound/tracks/background.wav");
+        b = new BackGroundMusicThread("Sound/tracks/background.wav");
         Thread backgroundMusic = new Thread(b, "bgSound");
         backgroundMusic.start();
         }

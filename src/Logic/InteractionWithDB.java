@@ -29,7 +29,7 @@ public class InteractionWithDB
     {
         try
         {
-            conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1/hooligan_wars_schema", "root", "root");
+            conn = DriverManager.getConnection("jdbc:mysql://sql5.freemysqlhosting.net:3306/sql544839", "sql544839", "hC5*xK7%");
         } catch (SQLException ex)
         {
             //Logger.getLogger(InteractionWithDB.class.getName()).log(Level.SEVERE, null, ex);
@@ -156,14 +156,14 @@ public class InteractionWithDB
             if(isWin)
             {
             stat = conn.prepareStatement
-            ("INSERT INTO hooligan_wars_schema.wonmatches (Players_playerId) \n" +
-            "(SELECT playerId FROM hooligan_wars_schema.players WHERE username=?);");
+            ("INSERT INTO `sql544839`.wonmatches (Players_playerId) \n" +
+            "(SELECT playerId FROM `sql544839`.Players WHERE username=?);");
             }
             else
             {
             stat = conn.prepareStatement
-            ("INSERT INTO hooligan_wars_schema.lostmatches (Players_playerId) \n" +
-            "(SELECT playerId FROM hooligan_wars_schema.players WHERE username=?);");
+            ("INSERT INTO `sql544839`.lostmatches (Players_playerId) \n" +
+            "(SELECT playerId FROM `sql544839`.Players WHERE username=?);");
             }
             stat.setString(1, currentPlayer.getLoginToDatabase());
             

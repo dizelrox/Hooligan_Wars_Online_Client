@@ -1,7 +1,10 @@
 package Sound;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -34,16 +37,9 @@ public class BackGroundMusicThread implements Runnable
         {
             try
             {
-                soundFile = new File(strFilename);
-            } catch (Exception e)
-            {
-                e.printStackTrace();
-                System.exit(1);
-            }
-
-            try
-            {
-                audioStream = AudioSystem.getAudioInputStream(soundFile);
+                InputStream dir_url = ClassLoader.getSystemResourceAsStream(strFilename);
+                InputStream bufferedIn = new BufferedInputStream(dir_url);
+                audioStream = AudioSystem.getAudioInputStream(bufferedIn);
             } catch (Exception e)
             {
                 e.printStackTrace();

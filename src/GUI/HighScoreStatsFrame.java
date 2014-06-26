@@ -11,7 +11,6 @@ import Logic.TableRow;
 import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
 import java.awt.Color;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;

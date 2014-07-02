@@ -138,10 +138,6 @@ public class GameInitialize
      * Method used to create new bot character.
      * @return instance of {@linkplain Player} built with dedicated constructor for bots.
      */
-    public Player getNewBot()
-    {
-        return new Player(wepArray, armArray);
-    }
     /**
      * Method used to get weapons array.
      * @return array of {@linkplain Weapon}s

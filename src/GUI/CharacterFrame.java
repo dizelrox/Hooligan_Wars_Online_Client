@@ -750,8 +750,7 @@ public class CharacterFrame extends javax.swing.JFrame
 
     private void startBattleButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_startBattleButtonActionPerformed
     {//GEN-HEADEREND:event_startBattleButtonActionPerformed
-        if (isOnline)
-        {
+
             InteractionWithGameServer instance;
 
             try
@@ -765,7 +764,7 @@ public class CharacterFrame extends javax.swing.JFrame
                 player.setHealth(100);
                 player.setDefenceArea(null);
                 player.setAttackArea(null);
-                instance.sendCurrntPlayer(player);
+                instance.sendObjectToServer(player);
                 Player opponent = (Player) instance.getObjectFromServer();
                 System.out.println(opponent.getName());
                 BattleForm battleForm = new BattleForm(instance, player, opponent, this);
@@ -779,17 +778,6 @@ public class CharacterFrame extends javax.swing.JFrame
             {
             JOptionPane.showMessageDialog(null, "Server is not responing please try again later", "Connection Error", JOptionPane.ERROR_MESSAGE);
             }
-            
-            
-
-        } else
-        {
-            player.setHealth(100);
-            BattleForm battleForm = new BattleForm(null, player, game.getNewBot(), this);
-            speakThread.stop();
-            battleForm.setVisible(true);
-            this.setVisible(false);
-        }
     }//GEN-LAST:event_startBattleButtonActionPerformed
     /**
      * This method is called when the close button is pressed. After pressing
@@ -838,6 +826,8 @@ public class CharacterFrame extends javax.swing.JFrame
             }
 
         }
+        else
+           System.out.println("already wearing this type");
 
     }
 

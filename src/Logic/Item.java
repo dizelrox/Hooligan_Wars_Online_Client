@@ -11,7 +11,7 @@ import javax.swing.Icon;
  * @author Bogdan Kirylyuk
  *
  */
-public abstract class Item implements Serializable
+public abstract class Item implements Serializable,Comparable
 {
 	/**
 	 * String variable used as item name.
@@ -66,6 +66,12 @@ public abstract class Item implements Serializable
         setSmallBWIcon(new ImageIcon(getClass().getResource(smallBWIcon)));
         setBigIcon(new ImageIcon(getClass().getResource(bigIcon)));
         setAvalible(available);
+    }
+
+    @Override
+    public int compareTo(Object t)
+    {
+        return this.getItemType().getIndex()-((Item) t).getItemType().getIndex();
     }
     /**
      * Method used to get small icon of the item whether its unlocked or not.

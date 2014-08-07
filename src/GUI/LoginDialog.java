@@ -133,8 +133,6 @@ public class LoginDialog extends javax.swing.JDialog
     private void loginButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_loginButtonActionPerformed
     {//GEN-HEADEREND:event_loginButtonActionPerformed
 
-        
-            ObjectInputStream ois = null;
             Player player;
         try
         {

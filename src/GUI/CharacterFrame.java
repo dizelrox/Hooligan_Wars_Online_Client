@@ -105,6 +105,7 @@ public class CharacterFrame extends javax.swing.JFrame
         updateShopLabels();
         speakThread = new Thread(new TalkThread("Welcome " + player.getName() + ". Pick items wisely. Your enemy will show no mercy!"));
         speakThread.start();
+        System.out.println(armArray[0].isAvalible());
     }
 
     private void updateStockItemsInUseByPlayer()

@@ -29,7 +29,7 @@ public class InteractionWithDB
     {
         try
         {
-            conn = DriverManager.getConnection("jdbc:mysql://sql5.freemysqlhosting.net:3306/sql544839", "sql544839", "hC5*xK7%");
+            conn = DriverManager.getConnection("jdbc:mysql://192.168.0.101:3306/hooligan_wars_schema", "root", "bogdan123");
         } catch (SQLException ex)
         {
             //Logger.getLogger(InteractionWithDB.class.getName()).log(Level.SEVERE, null, ex);
